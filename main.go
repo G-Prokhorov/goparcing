@@ -8,14 +8,17 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"strconv"
 )
+
+var num1, num2 int
 
 // AddToFile works
 func AddToFile(s string, ch chan string, wg *sync.WaitGroup) {
 	defer wg.Done()
-
+	
 	str := strings.Split(s, ",")
-	ch <- str[0] + " - " + str[1]
+	ch <- str[num1] + " - " + str[num2]
 }
 
 func runChannel(wg *sync.WaitGroup, ch chan string) {
@@ -26,7 +29,22 @@ func runChannel(wg *sync.WaitGroup, ch chan string) {
 
 func main() {
 	start := time.Now()
-	file, err := os.Open("1000000.csv")
+
+	if len(os.Args) < 4 {
+		log.Fatalf("Missed argument");
+	}
+
+	a, err1 := strconv.Atoi(os.Args[2])
+	b, err2 := strconv.Atoi(os.Args[3])
+
+	num1 = a
+	num2 = b
+
+	if err1 != nil || err2 != nil {
+		log.Fatalf("third and fourth element is not a number");
+	}
+
+	file, err := os.Open(os.Args[1])
 
 	if err != nil {
 		log.Fatalf("failed opening file: %s", err)
